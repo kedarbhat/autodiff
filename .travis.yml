@@ -66,6 +66,7 @@ branches:
   only:
     - develop
     - master
+    - feature/test_accuracy
 
 script:
   - cd $BOOST_ROOT/libs/$SELF
