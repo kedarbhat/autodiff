@@ -51,7 +51,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(beta_hpp, T, BOOST_IDENTITY_TYPE((mp11::mp_list<fl
         auto autodiff_v = boost::math::betac(
             make_fvar<T, m>(a_), make_fvar<T, m>(b_), make_fvar<T, m>(z));
         auto anchor_v = boost::math::betac(a_, b_, z);
-        static_assert(std::is_same<decltype(anchor_v), T>::value, "");
         if (isZeroOrSubnormal(autodiff_v) || isZeroOrSubnormal(anchor_v)) {
           BOOST_REQUIRE_EQUAL(isZeroOrSubnormal(autodiff_v), isZeroOrSubnormal(anchor_v));
         } else {
