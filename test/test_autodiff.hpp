@@ -171,8 +171,8 @@ static typename std::enable_if<boost::math::differentiation::detail::is_fvar<T>:
 }
 
 
-template <typename T, int m = 3>
-using test_constants_t = test_detail::test_constants_t<T, mp11::mp_int<m>>;
+template <typename T, std::size_t m = 5>
+using test_constants_t = test_detail::test_constants_t<T, mp11::mp_size_t<m>>;
 
 template <typename W, typename X, typename Y, typename Z>
 promote<W, X, Y, Z> mixed_partials_f(const W& w, const X& x, const Y& y,

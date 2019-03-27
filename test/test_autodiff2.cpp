@@ -275,7 +275,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(asin_test, T, bin_float_types) {
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(asin_infinity, T, all_float_types) {
-  const T eps = 100 * std::numeric_limits<T>::epsilon();  // percent
   constexpr unsigned m = 5;
   auto x = make_fvar<T, m>(1);
   auto y = asin(x);
