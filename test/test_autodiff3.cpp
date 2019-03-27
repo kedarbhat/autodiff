@@ -34,20 +34,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(atan_test, T, all_float_types) {
   constexpr unsigned m = 5;
   const auto x = make_fvar<T, m>(cx);
   auto y = atan(x);
-  const auto eps = boost::math::tools::epsilon<T>();
-  BOOST_REQUIRE_CLOSE(y.derivative(0u), boost::math::constants::pi<T>() / 4, eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(1u), T(0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(2u), T(-0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(3u), T(0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(4u), T(0), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(5u), T(-3), eps);
+  BOOST_REQUIRE_EQUAL(y.derivative(0u), boost::math::constants::pi<T>() / 4);
+  BOOST_REQUIRE_EQUAL(y.derivative(1u), T(0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(2u), T(-0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(3u), T(0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(4u), T(0));
+  BOOST_REQUIRE_EQUAL(y.derivative(5u), T(-3));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(erf_test, T, all_float_types) {
   BOOST_MATH_STD_USING
   using namespace boost;
 
-  const T eps = 300 * 100 * boost::math::tools::epsilon<T>();  // percent
+  const T eps = 100 * boost::math::tools::epsilon<T>();  // percent
   const T cx = 1.0;
   constexpr unsigned m = 5;
   const auto x = make_fvar<T, m>(cx);
@@ -90,17 +89,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinc_test, T, bin_float_types) {
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh, T, bin_float_types) {
   BOOST_MATH_STD_USING
-  const T eps = 300 * boost::math::tools::epsilon<T>();  // percent
   const T cx = 1;
   constexpr unsigned m = 5;
   auto x = make_fvar<T, m>(cx);
   auto s = sinh(x);
   auto c = cosh(x);
-  BOOST_REQUIRE_CLOSE(s.derivative(0u), sinh(static_cast<T>(x)), eps);
-  BOOST_REQUIRE_CLOSE(c.derivative(0u), cosh(static_cast<T>(x)), eps);
+  BOOST_REQUIRE_EQUAL(s.derivative(0u), sinh(static_cast<T>(x)));
+  BOOST_REQUIRE_EQUAL(c.derivative(0u), cosh(static_cast<T>(x)));
   for (auto i : boost::irange(m + 1)) {
-    BOOST_REQUIRE_CLOSE(s.derivative(i), static_cast<T>(i % 2 == 1 ? c : s), eps);
-    BOOST_REQUIRE_CLOSE(c.derivative(i), static_cast<T>(i % 2 == 1 ? s : c), eps);
+    BOOST_REQUIRE_EQUAL(s.derivative(i), static_cast<T>(i % 2 == 1 ? c : s));
+    BOOST_REQUIRE_EQUAL(c.derivative(i), static_cast<T>(i % 2 == 1 ? s : c));
   }
 }
 

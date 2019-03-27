@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(exp_test, T, all_float_types) {
     // std::cout.precision(100);
     // std::cout << "y.derivative("<<i<<") = " << y.derivative(i) << ",
     // std::exp(cx) = " << std::exp(cx) << std::endl;
-    BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(i), exp(cx), std::numeric_limits<T>::epsilon());
+    BOOST_REQUIRE_EQUAL(y.derivative(i), exp(cx));
   }
 }
 
@@ -97,14 +97,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sqrt_test, T, all_float_types) {
   const T cx = 4.0;
   auto x = make_fvar<T, m>(cx);
   auto y = sqrt(x);
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(0u), sqrt(cx), std::numeric_limits<T>::epsilon());
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(1u), 0.5 * pow(cx, -0.5), std::numeric_limits<T>::epsilon());
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(2u), -0.5 * 0.5 * pow(cx, -1.5), std::numeric_limits<T>::epsilon());
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(3u), 0.5 * 0.5 * 1.5 * pow(cx, -2.5), std::numeric_limits<T>::epsilon());
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(4u), -0.5 * 0.5 * 1.5 * 2.5 * pow(cx, -3.5),
-                               std::numeric_limits<T>::epsilon());
-  BOOST_REQUIRE_CLOSE_FRACTION(y.derivative(5u), 0.5 * 0.5 * 1.5 * 2.5 * 3.5 * pow(cx, -4.5),
-                               std::numeric_limits<T>::epsilon());
+  BOOST_REQUIRE_EQUAL(y.derivative(0u), sqrt(cx));
+  BOOST_REQUIRE_EQUAL(y.derivative(1u), 0.5 * pow(cx, -0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(2u), -0.5 * 0.5 * pow(cx, -1.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(3u), 0.5 * 0.5 * 1.5 * pow(cx, -2.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(4u), -0.5 * 0.5 * 1.5 * 2.5 * pow(cx, -3.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(5u), 0.5 * 0.5 * 1.5 * 2.5 * 3.5 * pow(cx, -4.5));
   x = make_fvar<T, m>(0);
   y = sqrt(x);
   // std::cout << "sqrt(0) = " << y << std::endl; // (0,inf,-inf,inf,-inf,inf)
@@ -283,8 +281,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(asin_infinity, T, all_float_types) {
   auto y = asin(x);
   // std::cout << "asin(1) = " << y << std::endl; //
   // depth(1)(1.5707963267949,inf,inf,-nan,-nan,-nan)
-  BOOST_REQUIRE_CLOSE(y.derivative(0u), boost::math::constants::half_pi<T>(),
-                      eps);  // MacOS is not exact
+  BOOST_REQUIRE_EQUAL(y.derivative(0u), boost::math::constants::half_pi<T>()); // MacOS is not exact
   BOOST_REQUIRE_EQUAL(y.derivative(1u), std::numeric_limits<T>::infinity());
 }
 
