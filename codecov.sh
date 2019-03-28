@@ -18,7 +18,7 @@
 set -ex
 
 B2_VARIANT=debug
-ci/travis/build.sh cxxflags=-fprofile-arcs cxxflags=-ftest-coverage linkflags=-fprofile-arcs linkflags=-ftest-coverage -O0 --coverage
+ci/travis/build.sh cxxflags=-fprofile-arcs cxxflags=-ftest-coverage cxxflags=-O0 cxxflags=--coverage linkflags=-fprofile-arcs linkflags=-ftest-coverage
 
 # switch back to the original source code directory
 cd $TRAVIS_BUILD_DIR
