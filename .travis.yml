@@ -128,12 +128,11 @@ jobs:
         - COMMENT=codecov.io
         - TOOLSET=gcc-7
         - CXXSTD=11,14,17
-        - CXXFLAGS="cxxflags=-O0 cxxflags=--coverage"
       addons: *gcc-7
       script:
         - pushd /tmp && git clone https://github.com/linux-test-project/lcov.git && export PATH=/tmp/lcov/bin:$PATH && which lcov && lcov --version && popd
         - cd $BOOST_ROOT/libs/$SELF
-        - ci/travis/codecov.sh
+        - ./codecov.sh
 
     #- os: linux
     #  env:
