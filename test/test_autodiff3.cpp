@@ -34,20 +34,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(atan_test, T, all_float_types) {
   constexpr unsigned m = 5;
   const auto x = make_fvar<T, m>(cx);
   auto y = atan(x);
-  const auto eps = boost::math::tools::epsilon<T>();
-  BOOST_REQUIRE_CLOSE(y.derivative(0u), boost::math::constants::pi<T>() / 4, eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(1u), T(0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(2u), T(-0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(3u), T(0.5), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(4u), T(0), eps);
-  BOOST_REQUIRE_CLOSE(y.derivative(5u), T(-3), eps);
+  BOOST_REQUIRE_EQUAL(y.derivative(0u), boost::math::constants::pi<T>() / 4);
+  BOOST_REQUIRE_EQUAL(y.derivative(1u), T(0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(2u), T(-0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(3u), T(0.5));
+  BOOST_REQUIRE_EQUAL(y.derivative(4u), T(0));
+  BOOST_REQUIRE_EQUAL(y.derivative(5u), T(-3));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(erf_test, T, all_float_types) {
   BOOST_MATH_STD_USING
   using namespace boost;
 
-  const T eps = 300 * 100 * boost::math::tools::epsilon<T>();  // percent
+  const T eps = 100 * boost::math::tools::epsilon<T>();  // percent
   const T cx = 1.0;
   constexpr unsigned m = 5;
   const auto x = make_fvar<T, m>(cx);
@@ -88,19 +87,31 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinc_test, T, bin_float_types) {
   BOOST_REQUIRE_CLOSE(y2.derivative(10u), -cx / T(11), eps);
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh, T, bin_float_types) {
-  BOOST_MATH_STD_USING
-  const T eps = 300 * boost::math::tools::epsilon<T>();  // percent
+BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh_and_tanh, T, bin_float_types) {
+  using std::cosh;
+  using std::sinh;
+  using std::tanh;
+  using std::pow;
+  constexpr std::array<const char *, 6> tanh_derivatives
+      {{"0.76159415595576488811945828260479359041276859725793655159681050012195324457663848345894752167367671442190275970155",
+       "0.4199743416140260693944967390417014449171867282307709547133114402445898995240483056156940088623187260",
+       "-0.6397000084492245001884917693038439532192113630607991449429985631870206934885434644440069533372017992",
+       "0.6216266807712962631065304287222233996757241175544541856396870633581620622188951465548376863495698762",
+       "0.6650910447505016777350714809210623499275713283320312544881492938309646347626843278089998045994094537",
+       "-5.556893558473719797604582902316972009873833721162934560195313423947089897942786231796317250984197038"}};
   const T cx = 1;
-  constexpr unsigned m = 5;
+  constexpr std::size_t m = 5;
   auto x = make_fvar<T, m>(cx);
   auto s = sinh(x);
   auto c = cosh(x);
-  BOOST_REQUIRE_CLOSE(s.derivative(0u), sinh(static_cast<T>(x)), eps);
-  BOOST_REQUIRE_CLOSE(c.derivative(0u), cosh(static_cast<T>(x)), eps);
-  for (auto i : boost::irange(m + 1)) {
-    BOOST_REQUIRE_CLOSE(s.derivative(i), static_cast<T>(i % 2 == 1 ? c : s), eps);
-    BOOST_REQUIRE_CLOSE(c.derivative(i), static_cast<T>(i % 2 == 1 ? s : c), eps);
+  auto t = tanh(x);
+  BOOST_REQUIRE_EQUAL(s.derivative(0u), sinh(cx));
+  BOOST_REQUIRE_EQUAL(c.derivative(0u), cosh(cx));
+  BOOST_REQUIRE_EQUAL(t.derivative(0u), tanh(cx));
+  for (auto i : boost::irange(std::size_t{1}, m + 1)) {
+    BOOST_REQUIRE_EQUAL(s.derivative(i), static_cast<T>(i % 2 == 1 ? c : s));
+    BOOST_REQUIRE_EQUAL(c.derivative(i), static_cast<T>(i % 2 == 1 ? s : c));
+    BOOST_REQUIRE(isZeroOrSubnormal(t.derivative(i)-boost::lexical_cast<T>(tanh_derivatives[i])));
   }
 }
 

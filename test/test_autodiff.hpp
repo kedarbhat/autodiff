@@ -11,7 +11,6 @@
 #include <boost/math/tools/big_constant.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
-
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/mpl.hpp>
@@ -157,14 +156,23 @@ static_assert(std::is_same<RandomSample<bmp::cpp_bin_float_50>::dist_t,
 }  // namespace test_detail
 
 template<typename T>
-static bool isZeroOrSubnormal(T t) noexcept {
+static typename std::enable_if<!boost::math::differentiation::detail::is_fvar<T>::value, bool>::type isZeroOrSubnormal(T t) noexcept {
+  using std::sqrt;
+  using boost::multiprecision::sqrt;
   using boost::math::fpclassify;
   using boost::multiprecision::fpclassify;
-  return fpclassify(t) == FP_ZERO || fpclassify(t) == FP_SUBNORMAL;
+  return fpclassify(t) == FP_ZERO || fpclassify(t) == FP_SUBNORMAL || boost::math::fpc::is_small(t, sqrt(std::numeric_limits<T>::epsilon()));
 }
 
-template <typename T, int m = 3>
-using test_constants_t = test_detail::test_constants_t<T, mp11::mp_int<m>>;
+template<typename T>
+static typename std::enable_if<boost::math::differentiation::detail::is_fvar<T>::value, bool>::type isZeroOrSubnormal(T t) noexcept {
+  using root_type = typename T::root_type;
+  return isZeroOrSubnormal(static_cast<root_type>(t));
+}
+
+
+template <typename T, std::size_t m = 5>
+using test_constants_t = test_detail::test_constants_t<T, mp11::mp_size_t<m>>;
 
 template <typename W, typename X, typename Y, typename Z>
 promote<W, X, Y, Z> mixed_partials_f(const W& w, const X& x, const Y& y,
