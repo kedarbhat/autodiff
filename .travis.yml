@@ -24,6 +24,14 @@
 
 language: cpp
 
+sudo: false
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
 env:
   global:
     # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
@@ -40,8 +48,9 @@ install:
   - git clone https://github.com/boostorg/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
   - export SELF=`basename $TRAVIS_BUILD_DIR`
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
   - cd ..
-  - git clone -b develop --depth 1 https://github.com/boostorg/boost.git boost-root
+  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
   - cd boost-root
   - git submodule update -q --init libs/headers
   - git submodule update -q --init tools/boost_install
