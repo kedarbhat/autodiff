@@ -156,7 +156,8 @@ static_assert(std::is_same<RandomSample<bmp::cpp_bin_float_50>::dist_t,
 }  // namespace test_detail
 
 template<typename T>
-static typename std::enable_if<!boost::math::differentiation::detail::is_fvar<T>::value, bool>::type isZeroOrSubnormal(T t) noexcept {
+auto isNearZero(T t) noexcept -> typename std::enable_if<!detail::is_fvar<T>::value, bool>::type
+{
   using std::sqrt;
   using boost::multiprecision::sqrt;
   using boost::math::fpclassify;
@@ -165,11 +166,11 @@ static typename std::enable_if<!boost::math::differentiation::detail::is_fvar<T>
 }
 
 template<typename T>
-static typename std::enable_if<boost::math::differentiation::detail::is_fvar<T>::value, bool>::type isZeroOrSubnormal(T t) noexcept {
+auto isNearZero(T t) noexcept -> typename std::enable_if<detail::is_fvar<T>::value, bool>::type
+{
   using root_type = typename T::root_type;
-  return isZeroOrSubnormal(static_cast<root_type>(t));
+  return isNearZero(static_cast<root_type>(t));
 }
-
 
 template <typename T, std::size_t m = 5>
 using test_constants_t = test_detail::test_constants_t<T, mp11::mp_size_t<m>>;

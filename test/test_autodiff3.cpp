@@ -111,7 +111,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh_and_tanh, T, bin_float_types) {
   for (auto i : boost::irange(std::size_t{1}, m + 1)) {
     BOOST_REQUIRE_EQUAL(s.derivative(i), static_cast<T>(i % 2 == 1 ? c : s));
     BOOST_REQUIRE_EQUAL(c.derivative(i), static_cast<T>(i % 2 == 1 ? s : c));
-    BOOST_REQUIRE(isZeroOrSubnormal(t.derivative(i)-boost::lexical_cast<T>(tanh_derivatives[i])));
+    BOOST_REQUIRE(isNearZero(t.derivative(i) -
+                             boost::lexical_cast<T>(tanh_derivatives[i])));
   }
 }
 

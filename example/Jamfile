@@ -9,6 +9,7 @@
 project boost/autodiff/example :
 ;
 
+run atan2.cpp ;
 run black_scholes.cpp ;
 run fourth_power.cpp ;
 run mixed_partials.cpp ;
