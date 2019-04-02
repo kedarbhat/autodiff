@@ -208,15 +208,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(cos_and_sin, T, bin_float_types) {
   BOOST_REQUIRE_EQUAL(cos5.derivative(1u), -sin(cx));
   BOOST_REQUIRE_EQUAL(cos5.derivative(2u), -cos(cx));
   BOOST_REQUIRE(isNearZero(cos5.derivative(3u) - sin(cx)));
-  BOOST_REQUIRE_EQUAL(cos5.derivative(4u), cos(cx));
-  BOOST_REQUIRE_EQUAL(cos5.derivative(5u), -sin(cx));
+  BOOST_REQUIRE(isNearZero(cos5.derivative(4u) - cos(cx)));
+  BOOST_REQUIRE(isNearZero(cos5.derivative(5u) + sin(cx)));
   auto sin5 = sin(x);
   BOOST_REQUIRE_EQUAL(sin5.derivative(0u), sin(cx));
   BOOST_REQUIRE_EQUAL(sin5.derivative(1u), cos(cx));
   BOOST_REQUIRE_EQUAL(sin5.derivative(2u), -sin(cx));
   BOOST_REQUIRE_EQUAL(sin5.derivative(3u), -cos(cx));
   BOOST_REQUIRE(isNearZero(sin5.derivative(4u) - sin(cx)));
-  BOOST_REQUIRE_EQUAL(sin5.derivative(5u), cos(cx));
+  BOOST_REQUIRE(isNearZero(sin5.derivative(5u) - cos(cx)));
   // Test Order = 0 for codecov
   auto cos0 = cos(make_fvar<T, 0>(cx));
   BOOST_REQUIRE_EQUAL(cos0.derivative(0u), cos(cx));
@@ -233,8 +233,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(acos_test, T, bin_float_types) {
   const T cx = 0.5;
   auto x = make_fvar<T, m>(cx);
   auto y = acos(x);
-  BOOST_REQUIRE_EQUAL(y.derivative(0u), acos(cx));
-  BOOST_REQUIRE_EQUAL(y.derivative(1u), -1 / sqrt(1 - cx * cx));
+  BOOST_REQUIRE_CLOSE(y.derivative(0u), acos(cx), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(1u), -1 / sqrt(1 - cx * cx), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(2u), -cx / pow(1 - cx * cx, 1.5), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(3u), -(2 * cx * cx + 1) / pow(1 - cx * cx, 2.5), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(4u), -3 * cx * (2 * cx * cx + 3) / pow(1 - cx * cx, 3.5), eps);
@@ -242,6 +242,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(acos_test, T, bin_float_types) {
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(acosh_test, T, bin_float_types) {
+  const T eps = 300 * std::numeric_limits<T>::epsilon();  // percent
   using boost::math::acosh;
   constexpr std::size_t m = 5;
   const T cx = 2;
@@ -249,12 +250,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(acosh_test, T, bin_float_types) {
   auto y = acosh(x);
   // BOOST_REQUIRE_EQUAL(y.derivative(0) == acosh(cx)); // FAILS! acosh(2) is
   // overloaded for integral types
-  BOOST_REQUIRE(isNearZero(y.derivative(0u) - acosh(cx)));
-  BOOST_REQUIRE_EQUAL(y.derivative(1u), 1 / boost::math::constants::root_three<T>());
-  BOOST_REQUIRE(isNearZero(y.derivative(2u) + 2 / (3 * boost::math::constants::root_three<T>())));
-  BOOST_REQUIRE(isNearZero(y.derivative(3u) -  1 / boost::math::constants::root_three<T>()));
-  BOOST_REQUIRE(isNearZero(y.derivative(4u) + 22 / (9 * boost::math::constants::root_three<T>())));
-  BOOST_REQUIRE(isNearZero(y.derivative(5u) - 227 / (27 * boost::math::constants::root_three<T>())));
+  BOOST_REQUIRE_CLOSE(y.derivative(0u),  acosh(cx), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(1u), 1 / boost::math::constants::root_three<T>(), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(2u), -2 / (3 * boost::math::constants::root_three<T>()), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(3u), 1 / boost::math::constants::root_three<T>(), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(4u), -22 / (9 * boost::math::constants::root_three<T>()), eps);
+  BOOST_REQUIRE_CLOSE(y.derivative(5u), 227 / (27 * boost::math::constants::root_three<T>()), eps);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(asin_test, T, bin_float_types) {
