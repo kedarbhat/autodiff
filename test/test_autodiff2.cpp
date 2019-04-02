@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(asin_derivative, T, bin_float_types) {
   BOOST_REQUIRE_EQUAL(y.derivative(4u), 0);
   y = sqrt(y);
   BOOST_REQUIRE_EQUAL(y.derivative(0u), sqrt(1 - cx * cx));
-  BOOST_REQUIRE_EQUAL(y.derivative(1u), -cx / sqrt(1 - cx * cx));
+  BOOST_REQUIRE_CLOSE(y.derivative(1u), -cx / sqrt(1 - cx * cx), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(2u), -1 / pow(1 - cx * cx, 1.5), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(3u), -3 * cx / pow(1 - cx * cx, 2.5), eps);
   BOOST_REQUIRE_CLOSE(y.derivative(4u), -(12 * cx * cx + 3) / pow(1 - cx * cx, 3.5), eps);
