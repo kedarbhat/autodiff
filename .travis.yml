@@ -24,7 +24,6 @@
 
 language: cpp
 
-sudo: false
 
 branches:
   only:
@@ -161,17 +160,17 @@ jobs:
     #################### Jobs to run on pushes to master, develop ###################
 
     # Coverity Scan
-    # - os: linux
-    #  if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
-    #  env:
-    #    - COMMENT="Coverity Scan"
-    #    - TOOLSET=gcc
-    #    - B2_VARIANT=variant=debug
-    #    - CXXSTD=17
-    #  addons: *gcc-7
-    #  script:
-    #    - cd $BOOST_ROOT/libs/$SELF
-    #    - ci/travis/coverity.sh
+    - os: linux
+      if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
+      env:
+        - COMMENT="Coverity Scan"
+        - TOOLSET=gcc
+        - B2_VARIANT=variant=debug
+        - CXXSTD=17
+      addons: *gcc-7
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/coverity.sh
 
 notifications:
   email:
