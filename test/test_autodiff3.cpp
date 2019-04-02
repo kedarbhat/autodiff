@@ -85,6 +85,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinc_test, T, bin_float_types) {
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh_and_tanh, T, bin_float_types) {
+  const T eps = 300 * boost::math::tools::epsilon<T>();  // percent
   using std::cosh;
   using std::sinh;
   using std::tanh;
@@ -102,12 +103,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinh_and_cosh_and_tanh, T, bin_float_types) {
   auto s = sinh(x);
   auto c = cosh(x);
   auto t = tanh(x);
-  BOOST_REQUIRE_EQUAL(s.derivative(0u), sinh(cx));
-  BOOST_REQUIRE_EQUAL(c.derivative(0u), cosh(cx));
-  BOOST_REQUIRE_EQUAL(t.derivative(0u), tanh(cx));
+  BOOST_REQUIRE_CLOSE(s.derivative(0u), sinh(cx), eps);
+  BOOST_REQUIRE_CLOSE(c.derivative(0u), cosh(cx), eps);
+  BOOST_REQUIRE_CLOSE(t.derivative(0u), tanh(cx), eps);
   for (auto i : boost::irange(std::size_t{1}, m + 1)) {
-    BOOST_REQUIRE_EQUAL(s.derivative(i), (i % 2 == 1 ? c : s));
-    BOOST_REQUIRE_EQUAL(c.derivative(i), (i % 2 == 1 ? s : c));
+    BOOST_REQUIRE_CLOSE(s.derivative(i), (i % 2 == 1 ? c : s), eps);
+    BOOST_REQUIRE_CLOSE(c.derivative(i), (i % 2 == 1 ? s : c), eps);
     BOOST_REQUIRE(isNearZero(t.derivative(i) -
                              boost::lexical_cast<T>(tanh_derivatives[i])));
   }
