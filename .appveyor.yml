@@ -25,8 +25,9 @@ shallow_clone: true
 
 branches:
   only:
-    - develop
     - master
+    - develop
+    - /feature\/.*/
 
 matrix:
   # Adding MAYFAIL to any matrix job allows it to fail but the build stays green:
@@ -118,20 +119,12 @@ environment:
       CXXSTD: 11,14
 
 install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
   - set SELF=%APPVEYOR_PROJECT_NAME:-=_%
   - git clone https://github.com/boostorg/boost-ci.git C:\boost-ci
   - xcopy /s /e /q /i C:\boost-ci\ci .\ci
-  - cd ..
-  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
-  - cd boost-root
-  - git submodule update -q --init libs/headers
-  - git submodule update -q --init tools/boost_install
-  - git submodule update -q --init tools/boostdep
-  - git submodule update -q --init tools/build
-  - xcopy /s /e /q /I %APPVEYOR_BUILD_FOLDER% libs\%SELF%
-  - python tools/boostdep/depinst/depinst.py %SELF%
-  - cmd /c bootstrap
-  - b2 headers
+  - ci\appveyor\install.bat
 
 build: off
 
@@ -144,4 +137,3 @@ test_script:
   - IF NOT DEFINED SCRIPT                         (ECHO b2 libs/%SELF:\=/% %TOOLCXX% %CXXFLAGS% %DEFINES% %THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3)
   # Now go build...
   - IF DEFINED SCRIPT (call libs\%SELF%\%SCRIPT%) ELSE (b2 libs/%SELF:\=/% %TOOLCXX% %CXXFLAGS% %DEFINES% %THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3)
-  

@@ -24,6 +24,14 @@
 
 language: cpp
 
+sudo: false
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
 env:
   global:
     # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
@@ -39,21 +47,7 @@ before_install:
 install:
   - git clone https://github.com/boostorg/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
-  - export SELF=`basename $TRAVIS_BUILD_DIR`
-  - cd ..
-  - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
-  - cd boost-root
-  - git submodule update -q --init libs/headers
-  - git submodule update -q --init tools/boost_install
-  - git submodule update -q --init tools/boostdep
-  - git submodule update -q --init tools/build
-  - mkdir -p libs/$SELF
-  - cp -r $TRAVIS_BUILD_DIR/* libs/$SELF
-  - export BOOST_ROOT="`pwd`"
-  - export PATH="`pwd`":$PATH
-  - python tools/boostdep/depinst/depinst.py $SELF
-  - ./bootstrap.sh
-  - ./b2 headers
+  - source ci/travis/install.sh
 
 addons:
   apt:
@@ -61,11 +55,6 @@ addons:
       - binutils-gold
       - gdb
       - libc6-dbg
-
-branches:
-  only:
-    - develop
-    - master
 
 script:
   - cd $BOOST_ROOT/libs/$SELF
