@@ -151,12 +151,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ylogx, T, all_float_types) {
   BOOST_REQUIRE_EQUAL(z.derivative(0u, 3u), 0);
   BOOST_REQUIRE_EQUAL(z.derivative(0u, 4u), 0);
   for (auto i : boost::irange(std::size_t{1}, m + 1)) {
-    BOOST_REQUIRE(isNearZero(z.derivative(i, 0u) -
-                             pow(-1, i - 1) * boost::math::factorial<T>(i - 1) *
-                                 cy / pow(cx, i)));
-    BOOST_REQUIRE(isNearZero(z.derivative(i, 1u) -
-                             pow(-1, i - 1) * boost::math::factorial<T>(i - 1) /
-                                 pow(cx, i)));
+    BOOST_REQUIRE_CLOSE(z.derivative(i, 0u), pow(-1, i - 1) * boost::math::factorial<T>(static_cast<unsigned>(i - 1)) * cy / pow(cx, i), eps);
+    BOOST_REQUIRE_CLOSE(z.derivative(i, 1u), pow(-1, i - 1) * boost::math::factorial<T>(static_cast<unsigned>(i - 1)) / pow(cx, i), eps);
     for (auto j : boost::irange(std::size_t{2}, n + 1)) {
       BOOST_REQUIRE_EQUAL(z.derivative(i, j), 0u);
     }

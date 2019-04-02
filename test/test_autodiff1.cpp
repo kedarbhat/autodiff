@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(power8, T, all_float_types) {
   x *= x;
   x *= x;
   x *= x;
-  const T power_factorial = boost::math::factorial<T>(n);
+  const T power_factorial = boost::math::factorial<T>(static_cast<std::size_t>(n));
   for (auto i : boost::irange(n + 1)) {
     BOOST_REQUIRE_EQUAL(
         static_cast<T>(x.derivative(i)),

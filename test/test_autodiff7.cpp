@@ -27,25 +27,25 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(factorials_hpp, T, all_float_types) {
   test_detail::RandomSample<T> x_sampler{0, 28};
   for (auto i : boost::irange(static_cast<unsigned>(test_constants::n_samples))) {
     {
-      auto fact_i = boost::math::factorial<T>(i);
+      auto fact_i = boost::math::factorial<T>(static_cast<unsigned>(i));
       auto autodiff_v = boost::math::factorial<autodiff_fvar<T, m>>(i);
       BOOST_REQUIRE_CLOSE(autodiff_v, fact_i, 50 * test_constants::pct_epsilon());
     }
 
     {
-      auto fact_i = boost::math::unchecked_factorial<T>(i);
+      auto fact_i = boost::math::unchecked_factorial<T>(static_cast<unsigned>(i));
       auto autodiff_v = boost::math::unchecked_factorial<autodiff_fvar<T, m>>(i);
       BOOST_REQUIRE_CLOSE(autodiff_v, fact_i, 50 * test_constants::pct_epsilon());
     }
 
     {
-      auto fact_i = boost::math::unchecked_factorial<T>(i);
+      auto fact_i = boost::math::unchecked_factorial<T>(static_cast<unsigned>(i));
       auto autodiff_v = boost::math::unchecked_factorial<autodiff_fvar<T, m>>(i);
       BOOST_REQUIRE_CLOSE(autodiff_v, fact_i, 50 * test_constants::pct_epsilon());
     }
 
     {
-      auto fact_i = boost::math::double_factorial<T>(i);
+      auto fact_i = boost::math::double_factorial<T>(static_cast<unsigned>(i));
       auto autodiff_v = boost::math::double_factorial<autodiff_fvar<T, m>>(i);
       BOOST_REQUIRE_CLOSE(autodiff_v, fact_i, 50 * test_constants::pct_epsilon());
     }
