@@ -24,7 +24,6 @@
 
 language: cpp
 
-sudo: false
 
 branches:
   only:
@@ -45,24 +44,9 @@ before_install:
   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update && brew install gcc; fi
 
 install:
-  - git clone https://github.com/boostorg/boost-ci.git boost-ci
+  - git clone https://github.com/kedarbhat/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
-  - export SELF=`basename $TRAVIS_BUILD_DIR`
-  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
-  - cd ..
-  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
-  - cd boost-root
-  - git submodule update -q --init libs/headers
-  - git submodule update -q --init tools/boost_install
-  - git submodule update -q --init tools/boostdep
-  - git submodule update -q --init tools/build
-  - mkdir -p libs/$SELF
-  - cp -r $TRAVIS_BUILD_DIR/* libs/$SELF
-  - export BOOST_ROOT="`pwd`"
-  - export PATH="`pwd`":$PATH
-  - python tools/boostdep/depinst/depinst.py $SELF
-  - ./bootstrap.sh
-  - ./b2 headers
+  - source ci/travis/install.sh
 
 addons:
   apt:
@@ -176,17 +160,16 @@ jobs:
     #################### Jobs to run on pushes to master, develop ###################
 
     # Coverity Scan
-    # - os: linux
-    #  if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
-    #  env:
-    #    - COMMENT="Coverity Scan"
-    #    - TOOLSET=gcc
-    #    - B2_VARIANT=variant=debug
-    #    - CXXSTD=17
-    #  addons: *gcc-7
-    #  script:
-    #    - cd $BOOST_ROOT/libs/$SELF
-    #    - ci/travis/coverity.sh
+    - os: linux
+      if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
+      env:
+        - COMMENT="Coverity Scan"
+        - TOOLSET=gcc
+        - CXXSTD=17
+      addons: *gcc-7
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/coverity.sh
 
 notifications:
   email:
