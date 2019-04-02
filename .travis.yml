@@ -45,9 +45,9 @@ before_install:
   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update && brew install gcc; fi
 
 install:
-  - git clone https://github.com/boostorg/boost-ci.git boost-ci
+  - git clone https://github.com/kedarbhat/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
-  - source ./travis_install.sh
+  - source ci/travis/install.sh
 
 addons:
   apt:
