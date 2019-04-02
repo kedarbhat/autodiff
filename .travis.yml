@@ -166,6 +166,7 @@ jobs:
         - COMMENT="Coverity Scan"
         - TOOLSET=gcc
         - CXXSTD=17
+        - COVERITY_PROJECT_NAME="Autodiff"
       addons: *gcc-7
       script:
         - cd $BOOST_ROOT/libs/$SELF
