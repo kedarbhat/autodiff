@@ -168,6 +168,7 @@ jobs:
         - CXXSTD=17
         - COVERITY_PROJECT_NAME=Autodiff
         - B2_VARIANT=variant=release
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       addons: *gcc-7
       script:
         #- |-
