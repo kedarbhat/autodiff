@@ -168,7 +168,7 @@ jobs:
         - COMPILER=g++-7
         - CXXSTD=11,17
         - COVERITY_PROJECT_NAME=Autodiff
-        - B2_VARIANT=variant=debug
+        - B2_VARIANT=variant=release
       addons: *gcc-7
       script:
         - |-
