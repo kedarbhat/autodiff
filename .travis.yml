@@ -179,3 +179,6 @@ jobs:
 notifications:
   email:
     false
+
+after_failure:
+  - if [ -f "/home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt" ]; then cat /home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt ; fi
