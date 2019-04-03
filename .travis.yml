@@ -129,7 +129,7 @@ jobs:
       addons: *gcc-7
       script:
         - cd $BOOST_ROOT/libs/$SELF
-        - ci/travis/cppcheck.sh
+        - travis_wait 60 ci/travis/cppcheck.sh
 
     - os: linux
       env:
