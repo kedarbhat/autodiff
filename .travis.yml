@@ -121,16 +121,14 @@ jobs:
         - cd $BOOST_ROOT/libs/$SELF
         - ci/travis/codecov.sh
 
-    #- os: linux
-    #  env:
-    #    - COMMENT=cppcheck
-    #    - CXXSTD=14
-    #    - CC=gcc-7
-    #    - CXX=g++-7
-    #  addons: *gcc-7
-    #  script:
-    #    - cd $BOOST_ROOT/libs/$SELF
-    #    - ./autodiff_cppcheck.sh
+    - os: linux
+      env:
+        - COMMENT=cppcheck
+        - TOOLSET=gcc-7
+      addons: *gcc-7
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/cppcheck.sh
 
     - os: linux
       env:
@@ -158,15 +156,13 @@ jobs:
         - ci/travis/valgrind.sh
 
     #################### Jobs to run on pushes to master, develop ###################
-
     # Coverity Scan
     - os: linux
       if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
       env:
         - COMMENT="Coverity Scan"
         - TOOLSET=gcc-7
-        - CXXSTD=17
-        - COVERITY_PROJECT_NAME="Autodiff"
+        - CXXSTD=11,17
       addons: *gcc-7
       script:
         - cd $BOOST_ROOT/libs/$SELF
