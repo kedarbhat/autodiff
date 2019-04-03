@@ -164,15 +164,14 @@ jobs:
       if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
       env:
         - COMMENT="Coverity Scan"
-        - TOOLSET=gcc
-        - COMPILER=g++-7
+        - TOOLSET=gcc-7
         - CXXSTD=17
         - COVERITY_PROJECT_NAME=Autodiff
         - B2_VARIANT=variant=release
       addons: *gcc-7
       script:
         - |-
-          echo "using $TOOLSET : 7 : $COMPILER ;" > ~/user-config.jam
+          echo "using gcc : 7 : g++-7 ;" > ~/user-config.jam
         - cd $BOOST_ROOT/libs/$SELF
         - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
         - ci/travis/coverity.sh
