@@ -97,19 +97,19 @@ jobs:
 
   include:
     # libstdc++
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=gcc-5 && CXX=g++-5",           "TOOLSET=gcc-5",     "CXXSTD=11"          ], addons: *gcc-5     }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=gcc-5 && CXX=g++-6",           "TOOLSET=gcc-6",     "CXXSTD=11,14"       ], addons: *gcc-6     }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=gcc-5 && CXX=g++-7",           "TOOLSET=gcc-7",     "CXXSTD=11,14,17"    ], addons: *gcc-7     }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=gcc-5 && CXX=g++-8",           "TOOLSET=gcc-8",     "CXXSTD=11,14,17,2a" ], addons: *gcc-8     }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=clang-3.8 && CXX=clang++-3.8", "TOOLSET=clang-3.8", "CXXSTD=11,14"       ], addons: *clang-38  }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=clang-4.0 && CXX=clang++-4.0", "TOOLSET=clang-4.0", "CXXSTD=11,14"       ], addons: *clang-4   }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=clang-5.0 && CXX=clang++-5.0", "TOOLSET=clang-5.0", "CXXSTD=11,14,17"    ], addons: *clang-5   }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=clang-6.0 && CXX=clang++-6.0", "TOOLSET=clang-6.0", "CXXSTD=11,14,17,2a" ], addons: *clang-6   }
-    - { os: "linux", env: [ "MATRIX_EVAL=CC=clang-6.0 && CXX=clang++-6.0", "TOOLSET=clang-6.0", "CXXSTD=11,14,17,2a",
+    - { os: "linux", env: [ "TOOLSET=gcc-5",       "CXXSTD=11"           ], addons: *gcc-5     }
+    - { os: "linux", env: [ "TOOLSET=gcc-6",       "CXXSTD=11,14"        ], addons: *gcc-6     }
+    - { os: "linux", env: [ "TOOLSET=gcc-7",       "CXXSTD=11,14,17"     ], addons: *gcc-7     }
+    - { os: "linux", env: [ "TOOLSET=gcc-8",       "CXXSTD=11,14,17,2a"  ], addons: *gcc-8     }
+    - { os: "linux", env: [ "TOOLSET=clang-3.8",   "CXXSTD=11,14"        ], addons: *clang-38  }
+    - { os: "linux", env: [ "TOOLSET=clang-4.0",   "CXXSTD=11,14"        ], addons: *clang-4   }
+    - { os: "linux", env: [ "TOOLSET=clang-5.0",   "CXXSTD=11,14,17"     ], addons: *clang-5   }
+    - { os: "linux", env: [ "TOOLSET=clang-6.0",   "CXXSTD=11,14,17,2a"  ], addons: *clang-6   }
+    - { os: "linux", env: [ "TOOLSET=clang-6.0",   "CXXSTD=11,14,17,2a",
                             "CXXFLAGS=-stdlib=libc++"                    ], addons: *clang-6   }
 
     # osx
-    - { os: "osx", env: [ "MATRIX_EVAL=CC=clang-6.0 && CXX=clang++-6.0", "TOOLSET=clang", "COMPILER=clang++", "CXXSTD=11,14,17" ], osx_image: "xcode9.3" }
+    - { os: "osx", env: [ "TOOLSET=clang", "COMPILER=clang++", "CXXSTD=11,14,17" ], osx_image: "xcode9.3" }
 
     - os: linux
       env:
@@ -161,20 +161,17 @@ jobs:
 
     #################### Jobs to run on pushes to master, develop ###################
     # Coverity Scan
-    - os: linux
-      if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
-      env:
-        - COMMENT="Coverity Scan"
-        - TOOLSET=gcc-7
-        - CXXSTD=17
-        - B2_VARIANT=variant=debug
-      addons: *gcc-7
-      script:
-        - cd $BOOST_ROOT/libs/$SELF
-        - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
-        - ci/travis/coverity.sh
-      after_script:
-        - if [ -f "/home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt" ]; then cat /home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt ; fi
+    # - os: linux
+    #   if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
+    #   env:
+    #     - COMMENT="Coverity Scan"
+    #     - TOOLSET=gcc-7
+    #     - CXXSTD=11,14,17
+    #   addons: *gcc-7
+    #   script:
+    #     - cd $BOOST_ROOT/libs/$SELF
+    #     - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+    #     - ci/travis/coverity.sh
 
 notifications:
   email:
