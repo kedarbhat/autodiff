@@ -151,8 +151,7 @@ jobs:
         - B2_VARIANT=variant=debug
         - TESTFLAGS=testing.launcher=valgrind
         - VALGRIND_OPTS=--error-exitcode=1
-        - DEFINES="define=BOOST_USE_VALGRIND"
-        - DEFINES="define=BOOST_NO_STRESS_TEST=1"
+        - DEFINES="define=BOOST_USE_VALGRIND define=BOOST_NO_STRESS_TEST=1"
       addons: *clang-6
       script:
         - cd $BOOST_ROOT/libs/$SELF
