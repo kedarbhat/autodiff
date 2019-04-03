@@ -170,6 +170,8 @@ jobs:
         - B2_VARIANT=variant=release
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
       addons: *gcc-7
+      before_install:
+        - eval "${MATRIX_EVAL}"
       script:
         #- |-
         #  echo "using gcc : 7 : g++-7 ;" > ~/user-config.jam
