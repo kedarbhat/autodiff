@@ -175,10 +175,9 @@ jobs:
         - cd $BOOST_ROOT/libs/$SELF
         - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
         - ci/travis/coverity.sh
+      after_script:
+        - if [ -f "/home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt" ]; then cat /home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt ; fi
 
 notifications:
   email:
     false
-
-after_failure:
-  - if [ -f "/home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt" ]; then cat /home/travis/build/kedarbhat/boost-root/libs/autodiff/cov-int/build-log.txt ; fi
