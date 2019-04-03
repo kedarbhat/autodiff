@@ -165,12 +165,12 @@ jobs:
       env:
         - COMMENT="Coverity Scan"
         - TOOLSET=gcc-7
-        - CXXSTD=11,17
+        - CXXSTD=11
         - COVERITY_PROJECT_NAME=Autodiff
       addons: *gcc-7
       script:
         - cd $BOOST_ROOT/libs/$SELF
-        - cov-configure --template --compiler gcc --comptype g++-7
+        - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
         - ci/travis/coverity.sh
 
 notifications:
