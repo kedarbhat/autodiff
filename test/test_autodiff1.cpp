@@ -346,20 +346,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(power8, T, all_float_types) {
   x *= x;
   x *= x;
   x *= x;
-  const T power_factorial = boost::math::factorial<T>(n);
+  const T power_factorial = boost::math::factorial<T>(static_cast<std::size_t>(n));
   for (auto i : boost::irange(n + 1)) {
-    BOOST_REQUIRE_CLOSE(
+    BOOST_REQUIRE_EQUAL(
         static_cast<T>(x.derivative(i)),
-        static_cast<T>(power_factorial / boost::math::factorial<T>(static_cast<unsigned>(n - i)) * pow(ca, n - i)),
-        std::numeric_limits<T>::epsilon());
+        static_cast<T>(power_factorial / boost::math::factorial<T>(static_cast<unsigned>(n - i)) * pow(ca, n - i)));
   }
   x = make_fvar<T, n>(ca);
   // Test operator*()
   x = x * x * x * x * x * x * x * x;
   for (auto i : boost::irange(n + 1)) {
-    BOOST_REQUIRE_CLOSE(x.derivative(i),
-                        power_factorial / boost::math::factorial<T>(static_cast<unsigned>(n - i)) * pow(ca, n - i),
-                        std::numeric_limits<T>::epsilon());
+    BOOST_REQUIRE_EQUAL(x.derivative(i),
+                        power_factorial / boost::math::factorial<T>(static_cast<unsigned>(n - i)) * pow(ca, n - i));
   }
 }
 

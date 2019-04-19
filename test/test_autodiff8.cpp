@@ -116,17 +116,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(laguerre_hpp, T, all_float_types) {
     {
       auto autodiff_v = static_cast<T>(boost::math::laguerre(n, make_fvar<T, m>(x)));
       auto anchor_v = boost::math::laguerre(n, x);
-      if (isZeroOrSubnormal(autodiff_v) || isZeroOrSubnormal(anchor_v)) {
-        BOOST_REQUIRE_SMALL(autodiff_v, std::numeric_limits<T>::epsilon());
-        BOOST_REQUIRE_SMALL(anchor_v, std::numeric_limits<T>::epsilon());
-      } else {
-        BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 50*test_constants::pct_epsilon());
-      }
+      BOOST_REQUIRE(isNearZero(autodiff_v - anchor_v));
     }
     {
       auto autodiff_v = static_cast<T>(boost::math::laguerre(n, r, make_fvar<T, m>(x)));
       auto anchor_v = boost::math::laguerre(n, r, x);
-      if (isZeroOrSubnormal(autodiff_v) || isZeroOrSubnormal(anchor_v)) {
+      if (isNearZero(autodiff_v) || isNearZero(anchor_v)) {
         BOOST_REQUIRE_SMALL(autodiff_v, std::numeric_limits<T>::epsilon());
         BOOST_REQUIRE_SMALL(anchor_v, std::numeric_limits<T>::epsilon());
       } else {
@@ -160,7 +155,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(lambert_w_hpp, T, all_float_types) {
       {
         auto autodiff_v = static_cast<T>(boost::math::lambert_w0(make_fvar<T, m>(x_)));
         auto anchor_v = boost::math::lambert_w0(x_);
-        if (isZeroOrSubnormal(autodiff_v) || isZeroOrSubnormal(anchor_v)) {
+        if (isNearZero(autodiff_v) || isNearZero(anchor_v)) {
           BOOST_REQUIRE_SMALL(autodiff_v, std::numeric_limits<T>::epsilon());
           BOOST_REQUIRE_SMALL(anchor_v, std::numeric_limits<T>::epsilon());
         } else {
@@ -170,7 +165,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(lambert_w_hpp, T, all_float_types) {
       {
         auto autodiff_v = static_cast<T>(boost::math::lambert_w0_prime(make_fvar<T, m>(x_)));
         auto anchor_v = boost::math::lambert_w0_prime(x_);
-        if (isZeroOrSubnormal(autodiff_v) || isZeroOrSubnormal(anchor_v)) {
+        if (isNearZero(autodiff_v) || isNearZero(anchor_v)) {
           BOOST_REQUIRE_SMALL(autodiff_v, std::numeric_limits<T>::epsilon());
           BOOST_REQUIRE_SMALL(anchor_v, std::numeric_limits<T>::epsilon());
         } else {
@@ -290,25 +285,25 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(pow_hpp, T, all_float_types) {
   using test_constants = test_constants_t<T>;
   static constexpr auto m = test_constants::order;
   for (auto i : boost::irange(10)) {
-    BOOST_REQUIRE_CLOSE(boost::math::pow<0>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<0>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<0>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<0>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<1>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<1>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<1>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<1>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<2>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<2>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<2>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<2>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<3>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<3>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<3>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<3>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<4>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<4>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<4>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<4>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<5>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<5>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<5>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<5>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<6>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<6>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<6>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<6>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<7>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<7>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<7>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<7>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<8>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<8>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<8>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<8>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
-    BOOST_REQUIRE_CLOSE(boost::math::pow<9>(make_fvar<T, m>(static_cast<T>(i))), boost::math::pow<9>(static_cast<T>(i)),
+    BOOST_REQUIRE_CLOSE(boost::math::pow<9>(make_fvar<T, m>(static_cast<T>(i))).derivative(0), boost::math::pow<9>(static_cast<T>(i)),
                         test_constants::pct_epsilon());
   }
 }
@@ -321,7 +316,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(polygamma_hpp, T, all_float_types) {
     auto x = x_sampler.next();
     auto autodiff_v = boost::math::polygamma(i, make_fvar<T, m>(x));
     auto anchor_v = boost::math::polygamma(i, x);
-    BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 50 * test_constants::pct_epsilon());
+    BOOST_REQUIRE_CLOSE(autodiff_v.derivative(0), anchor_v, 50 * test_constants::pct_epsilon());
   }
 }
 
@@ -332,14 +327,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(powm1_hpp, T, all_float_types) {
 
   using std::log;
   using boost::multiprecision::log;
-  using boost::math::differentiation::detail::log;
 
   using std::min;
   using boost::multiprecision::min;
 
   using std::sqrt;
   using boost::multiprecision::sqrt;
-  using boost::math::differentiation::detail::sqrt;
 
   using boost::math::nextafter;
   using boost::multiprecision::nextafter;
@@ -349,12 +342,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(powm1_hpp, T, all_float_types) {
   test_detail::RandomSample<T> x_sampler{0, 2000};
   for (auto i : boost::irange(test_constants::n_samples)) {
     std::ignore = i;
-    auto x = ((max))(x_sampler.next(), boost::math::nextafter(static_cast<T>(0), ((std::numeric_limits<T>::max))()));
+    auto x = (max)(x_sampler.next(), boost::math::nextafter(static_cast<T>(0), ((std::numeric_limits<T>::max))()));
 
-    auto y = ((min))(x_sampler.next(), log(sqrt(((std::numeric_limits<T>::max))()) + 1) / log(x + 1));
+    auto y = (min)(x_sampler.next(), log(sqrt(((std::numeric_limits<T>::max))()) + 1) / log(x + 1));
     auto autodiff_v = boost::math::powm1(make_fvar<T, m>(x), make_fvar<T, m>(y));
     auto anchor_v = boost::math::powm1(x, y);
-    BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 2e6 * test_constants::pct_epsilon());
+    BOOST_REQUIRE_CLOSE(autodiff_v.derivative(0), anchor_v, 2e6 * test_constants::pct_epsilon());
   }
 }
 
@@ -365,7 +358,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sin_pi_hpp, T, all_float_types) {
   for (auto i : boost::irange(test_constants::n_samples)) {
     std::ignore = i;
     auto x = x_sampler.next();
-    BOOST_REQUIRE_CLOSE(boost::math::sin_pi(make_fvar<T, m>(x)), boost::math::sin_pi(x),
+    BOOST_REQUIRE_CLOSE(boost::math::sin_pi(make_fvar<T, m>(x)).derivative(0), boost::math::sin_pi(x),
                         test_constants::pct_epsilon());
   }
 }
@@ -380,7 +373,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sinhc_hpp, T, all_float_types) {
     if (x != 0) {
       auto autodiff_v = boost::math::sinhc_pi(make_fvar<T, m>(x));
       auto anchor_v = boost::math::sinhc_pi(x);
-      BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 50 * test_constants::pct_epsilon());
+      BOOST_REQUIRE_CLOSE(autodiff_v.derivative(0), anchor_v, 50 * test_constants::pct_epsilon());
     }
   }
 }
@@ -398,20 +391,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(spherical_harmonic_hpp, T, all_float_types) {
     {
       auto autodiff_v = boost::math::spherical_harmonic(n, r, make_fvar<T, m>(theta), make_fvar<T, m>(phi));
       auto anchor_v = boost::math::spherical_harmonic(n, r, theta, phi);
-      BOOST_REQUIRE_CLOSE(autodiff_v.real(), anchor_v.real(), 2.5e4 * test_constants::pct_epsilon());
-      BOOST_REQUIRE_CLOSE(autodiff_v.imag(), anchor_v.imag(), 2.5e4 * test_constants::pct_epsilon());
+      BOOST_REQUIRE_CLOSE(autodiff_v.real().derivative(0), anchor_v.real(), 2.5e4 * test_constants::pct_epsilon());
+      BOOST_REQUIRE_CLOSE(autodiff_v.imag().derivative(0), anchor_v.imag(), 2.5e4 * test_constants::pct_epsilon());
     }
 
     {
       auto autodiff_v = boost::math::spherical_harmonic_r(n, r, make_fvar<T, m>(theta), make_fvar<T, m>(phi));
       auto anchor_v = boost::math::spherical_harmonic_r(n, r, theta, phi);
-      BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 2.5e4 * test_constants::pct_epsilon());
+      BOOST_REQUIRE_CLOSE(autodiff_v.derivative(0), anchor_v, 2.5e4 * test_constants::pct_epsilon());
     }
 
     {
       auto autodiff_v = boost::math::spherical_harmonic_i(n, r, make_fvar<T, m>(theta), make_fvar<T, m>(phi));
       auto anchor_v = boost::math::spherical_harmonic_i(n, r, theta, phi);
-      BOOST_REQUIRE_CLOSE(autodiff_v, anchor_v, 2.5e4 * test_constants::pct_epsilon());
+      BOOST_REQUIRE_CLOSE(autodiff_v.derivative(0), anchor_v, 2.5e4 * test_constants::pct_epsilon());
     }
   }
 }
@@ -423,7 +416,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sqrt1pm1_hpp, T, all_float_types) {
   for (auto i : boost::irange(test_constants::n_samples)) {
     std::ignore = i;
     auto x = x_sampler.next();
-    BOOST_REQUIRE_CLOSE(boost::math::sqrt1pm1(make_fvar<T, m>(x)), boost::math::sqrt1pm1(x),
+    BOOST_REQUIRE_CLOSE(boost::math::sqrt1pm1(make_fvar<T, m>(x)).derivative(0), boost::math::sqrt1pm1(x),
                         50 * test_constants::pct_epsilon());
   }
 }
@@ -435,7 +428,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(trigamma_hpp, T, all_float_types) {
   for (auto i : boost::irange(test_constants::n_samples)) {
     std::ignore = i;
     auto x = x_sampler.next();
-    BOOST_REQUIRE_CLOSE(boost::math::trigamma(make_fvar<T, m>(x)), boost::math::trigamma(x),
+    BOOST_REQUIRE_CLOSE(boost::math::trigamma(make_fvar<T, m>(x)).derivative(0), boost::math::trigamma(x),
                         50 * test_constants::pct_epsilon());
   }
 }
@@ -447,7 +440,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(zeta_hpp, T, all_float_types) {
   for (auto i : boost::irange(test_constants::n_samples)) {
     std::ignore = i;
     auto x = x_sampler.next();
-    BOOST_REQUIRE_CLOSE(boost::math::zeta(make_fvar<T, m>(x)), boost::math::zeta(x),
+    BOOST_REQUIRE_CLOSE(boost::math::zeta(make_fvar<T, m>(x)).derivative(0), boost::math::zeta(x),
                         5e3 * test_constants::pct_epsilon());
   }
 }

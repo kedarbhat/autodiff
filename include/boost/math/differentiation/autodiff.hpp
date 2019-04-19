@@ -15,6 +15,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/mp11/function.hpp>
+#include <boost/type_traits/decay.hpp>
 
 #include <algorithm>
 #include <array>
@@ -47,32 +48,64 @@ namespace detail {
 template<typename RealType, size_t Order>
 class fvar;
 
-template <typename>
-struct get_depth : std::integral_constant<size_t, 0> {};
+// Compile-time test for fvar<> type.
+template<typename /*RealType*/>
+struct is_fvar_value : std::false_type {};
 
-template <typename RealType, size_t Order>
-struct get_depth<fvar<RealType,Order>> : std::integral_constant<size_t,get_depth<RealType>::value+1> {};
+template<typename RealType, std::size_t Order>
+struct is_fvar_value<fvar<RealType, Order>> : std::true_type {};
 
-template <typename>
-struct get_order_sum : std::integral_constant<size_t, 0> {};
+template<typename RealType>
+using is_fvar = is_fvar_value<boost::decay_t<RealType>>;
 
-template <typename RealType, size_t Order>
-struct get_order_sum<fvar<RealType,Order>> : std::integral_constant<size_t,get_order_sum<RealType>::value+Order> {};
+template<typename /*RealType*/>
+struct get_depth_value : mp11::mp_size_t<0> {};
+
+template<typename RealType, std::size_t Order>
+struct get_depth_value<fvar<RealType, Order>>
+    : mp11::mp_plus<
+        typename get_depth_value<boost::decay_t<RealType>>::type,
+        mp11::mp_size_t<1>> {
+};
+
+template<typename RealType>
+using get_depth = get_depth_value<boost::decay_t<RealType>>;
+
+template<typename /*RealType*/>
+struct get_order_sum_value : mp11::mp_size_t<0> {};
+
+template<typename RealType, std::size_t Order>
+struct get_order_sum_value<fvar<RealType, Order>>
+    : mp11::mp_plus<typename get_order_sum_value<
+        boost::decay_t<RealType>>::type,
+                    mp11::mp_size_t<Order>> {
+};
+
+template<typename RealType>
+using get_order_sum = get_order_sum_value<boost::decay_t<RealType>>;
 
 // Get non-fvar<> root type T of autodiff_fvar<T,O0,O1,O2,...>.
 template<typename RealType>
-struct get_root_type { using type = RealType; };
+struct get_root_type {
+  using type = RealType;
+};
 
 template<typename RealType, size_t Order>
-struct get_root_type<fvar<RealType,Order>> { using type = typename get_root_type<RealType>::type; };
+struct get_root_type<fvar<RealType, Order>> {
+  using type = typename get_root_type<RealType>::type;
+};
 
 // Get type from descending Depth levels into fvar<>.
 template<typename RealType, size_t Depth>
-struct type_at { using type = RealType; };
+struct type_at {
+  using type = RealType;
+};
 
 template<typename RealType, size_t Order, size_t Depth>
-struct type_at<fvar<RealType,Order>,Depth> { using type =
-  typename boost::conditional<Depth==0, fvar<RealType,Order>, typename type_at<RealType,Depth-1>::type>::type; };
+struct type_at<fvar<RealType, Order>, Depth> {
+  using type = mp11::mp_if_c<Depth==0, fvar<RealType, Order>,
+                             typename type_at<RealType, Depth - 1>::type>;
+};
 
 template<typename RealType, size_t Depth>
 using get_type_at = typename type_at<RealType,Depth>::type;
@@ -525,13 +558,6 @@ long long lltrunc(const fvar<RealType,Order>&);
 
 template<typename RealType, size_t Order>
 long double truncl(const fvar<RealType,Order>&);
-
-// Compile-time test for fvar<> type.
-template<typename>
-struct is_fvar : std::false_type {};
-
-template<typename RealType, size_t Order>
-struct is_fvar<fvar<RealType,Order>> : std::true_type {};
 
 template<typename RealType, size_t Order, size_t... Orders> // specialized for fvar<> below.
 struct nest_fvar { using type = fvar<typename nest_fvar<RealType,Orders...>::type,Order>; };
@@ -1784,6 +1810,11 @@ class numeric_limits<boost::math::differentiation::detail::fvar<RealType,Order>>
 namespace boost { namespace math { namespace tools {
 
 // See boost/math/tools/promotion.hpp
+template<typename RealType, std::size_t Order>
+struct promote_arg<differentiation::detail::fvar<RealType, Order>> {
+  using type = differentiation::detail::fvar<typename promote_arg<RealType>::type, Order>;
+};
+
 template<typename RealType0, size_t Order0, typename RealType1, size_t Order1>
 struct promote_args_2<differentiation::detail::fvar<RealType0, Order0>,
                       differentiation::detail::fvar<RealType1, Order1>>
@@ -1808,30 +1839,28 @@ struct promote_args_2<RealType0, differentiation::detail::fvar<RealType1, Order1
   using type = differentiation::detail::fvar<typename promote_args_2<RealType0, RealType1>::type, Order1>;
 };
 
-template<typename ToType, typename RealType, std::size_t Order>
-inline ToType real_cast(const differentiation::detail::fvar<RealType, Order> &from_v)
+template<typename result_type, typename RealType, std::size_t Order>
+inline result_type real_cast(const differentiation::detail::fvar<RealType, Order> &from_v)
 {
-  return static_cast<ToType>(static_cast<RealType>(from_v));
+  return static_cast<result_type>(static_cast<RealType>(from_v));
 }
 
 } // namespace tools
 
 namespace policies {
 
-template <class Policy, std::size_t Order>
-using fvar_t = differentiation::detail::fvar<Policy, Order>;
-template <class Policy, std::size_t Order>
-struct evaluation<fvar_t<float, Order>, Policy> {
-  using type = fvar_t<typename boost::conditional<Policy::promote_float_type::value, double, float>::type, Order>;
+template <typename RealType, std::size_t Order>
+using fvar_t = differentiation::detail::fvar<RealType, Order>;
+
+template <typename Policy, typename RealType, std::size_t Order>
+struct evaluation<fvar_t<RealType, Order>, Policy>  {
+  using root_type = typename differentiation::detail::get_root_type<RealType>::type;
+  using type = fvar_t<typename evaluation<root_type, Policy>::type, Order>;
 };
 
-template <class Policy, std::size_t Order>
-struct evaluation<fvar_t<double, Order>, Policy> {
-  using type =
-  fvar_t<typename boost::conditional<Policy::promote_double_type::value, long double, double>::type, Order>;
-};
-
-} } } // namespace boost::math::policies
+} // namespace policies
+} // namespace math
+} // namespace boost
 
 #ifdef BOOST_NO_CXX17_IF_CONSTEXPR
 #include "autodiff_cpp11.hpp"

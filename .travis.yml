@@ -25,6 +25,13 @@
 dist: xenial
 language: cpp
 
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
 env:
   global:
     # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
@@ -34,8 +41,12 @@ env:
     # - B2_THREADING=threading=multi,single
     - B2_VARIANT=variant=release,debug
 
+before_install:
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update && brew install gcc; fi
+  - eval "${MATRIX_EVAL}"
+
 install:
-  - git clone https://github.com/boostorg/boost-ci.git boost-ci
+  - git clone https://github.com/kedarbhat/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
   - source ci/travis/install.sh
 
@@ -130,6 +141,7 @@ jobs:
         - COMMENT=codecov.io
         - B2_TOOLSET=gcc-7
         - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
+        - B2_CXXSTD=11,14,17
       addons: *gcc-7
       script:
         - pushd /tmp && git clone https://github.com/linux-test-project/lcov.git && export PATH=/tmp/lcov/bin:$PATH && which lcov && lcov --version && popd
@@ -142,6 +154,12 @@ jobs:
     #   script:
     #     - cd $BOOST_ROOT/libs/$SELF
     #     - ci/travis/cppcheck.sh
+    #     - B2_TOOLSET=gcc-7
+    #     - B2_CXXSTD=14
+    #   addons: *gcc-7
+    #   script:
+    #     - cd $BOOST_ROOT/libs/$SELF
+    #     - travis_wait 20 ci/travis/cppcheck.sh
 
     - os: linux
       env:
@@ -153,6 +171,7 @@ jobs:
         - B2_CXXFLAGS="cxxflags=-fno-omit-frame-pointer cxxflags=-fsanitize=undefined cxxflags=-fno-sanitize-recover=undefined"
         - B2_LINKFLAGS="linkflags=-fsanitize=undefined linkflags=-fno-sanitize-recover=undefined linkflags=-fuse-ld=gold"
         - UBSAN_OPTIONS=print_stacktrace=1
+        - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
       addons: *gcc-8
 
     - os: linux
@@ -163,6 +182,7 @@ jobs:
         - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
         - B2_VARIANT=variant=debug
         - B2_TESTFLAGS=testing.launcher=valgrind
+        - B2_DEFINES="define=BOOST_USE_VALGRIND define=BOOST_NO_STRESS_TEST=1"
         - VALGRIND_OPTS=--error-exitcode=1
       addons: *clang-6
       script:
@@ -170,16 +190,17 @@ jobs:
         - ci/travis/valgrind.sh
 
     #################### Jobs to run on pushes to master, develop ###################
-
     # Coverity Scan
     - os: linux
       if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
       env:
         - COMMENT="Coverity Scan"
         - B2_TOOLSET=gcc-7
+        - B2_CXXSTD=11,14,17
       addons: *gcc-7
       script:
         - cd $BOOST_ROOT/libs/$SELF
+        - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
         - ci/travis/coverity.sh
 
 notifications:
