@@ -46,7 +46,7 @@ before_install:
   - eval "${MATRIX_EVAL}"
 
 install:
-  - git clone https://github.com/kedarbhat/boost-ci.git boost-ci
+  - git clone https://github.com/boostorg/boost-ci.git boost-ci
   - cp -pr boost-ci/ci boost-ci/.codecov.yml .
   - source ci/travis/install.sh
 
